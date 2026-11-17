@@ -79,10 +79,9 @@ class Outputer:
 
         event_info = [run, lumiBlock, eventNum]
 
-
-
         clean_PFCands = []
         for idx in range(len(PFCands)):
+            if abs(PFCands[idx].pdgId) != 13: continue   # keep only muons
             cand = ROOT.Math.PtEtaPhiMVector(PFCands[idx].pt, PFCands[idx].eta, PFCands[idx].phi, PFCands[idx].mass)
             clean_PFCands.append([cand.Px(), cand.Py(), cand.Pz(), cand.E(), 
                 PFCands[idx].d0, PFCands[idx].d0Err, PFCands[idx].dz, PFCands[idx].dzErr, PFCands[idx].charge, PFCands[idx].pdgId, PFCands[idx].puppiWeight])
@@ -90,9 +89,12 @@ class Outputer:
 
         self.event_info[self.idx] = np.array(event_info, dtype=np.int64)
         
-        if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]
-        self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
-
+        # if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]
+        # self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
+        if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]   
+        if len(clean_PFCands) > 0:                                                                   
+            self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
+        
         self.idx +=1
         if(self.idx % self.batch_size == 0): self.write_out()
 
@@ -144,6 +146,71 @@ def NanoReader(inputFileNames=["in.root"], outputFileName="out.root", json = '',
     "Flag_eeBadScFilter", 
     "Flag_CSCTightHaloFilter",
         ]
+
+    triggers = [
+    "HLT_DoubleIsoMu17_eta2p1_noDzCut",
+    "HLT_DoubleIsoMu17_eta2p1",
+    "HLT_IsoMu16_eta2p1_MET30_LooseIsoPFTau50_Trk30_eta2p1",
+    "HLT_IsoMu16_eta2p1_MET30",
+    "HLT_IsoMu17_eta2p1_LooseIsoPFTau20_SingleL1",
+    "HLT_IsoMu17_eta2p1_LooseIsoPFTau20",
+    "HLT_IsoMu18",
+    "HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1",
+    "HLT_IsoMu19_eta2p1_LooseIsoPFTau20",
+    "HLT_IsoMu19_eta2p1_MediumIsoPFTau32_Trk1_eta2p1_Reg",
+    "HLT_IsoMu20",
+    "HLT_IsoMu21_eta2p1_LooseIsoPFTau20_SingleL1",
+    "HLT_IsoMu21_eta2p1_LooseIsoPFTau50_Trk30_eta2p1_SingleL1",
+    "HLT_IsoMu21_eta2p1_MediumIsoPFTau32_Trk1_eta2p1_Reg",
+    "HLT_IsoMu22_eta2p1",
+    "HLT_IsoMu22",
+    "HLT_IsoMu24_eta2p1",
+    "HLT_IsoMu24",
+    "HLT_IsoMu27",
+    "HLT_IsoTkMu18",
+    "HLT_IsoTkMu20",
+    "HLT_IsoTkMu22_eta2p1",
+    "HLT_IsoTkMu22",
+    "HLT_IsoTkMu24_eta2p1",
+    "HLT_IsoTkMu24",
+    "HLT_IsoTkMu27",
+    "HLT_L1SingleMu16",
+    "HLT_L1SingleMu18",
+    "HLT_L2Mu10",
+    "HLT_Mu10_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT350_PFMETNoMu60",
+    "HLT_Mu15_IsoVVVL_BTagCSV_p067_PFHT400",
+    "HLT_Mu15_IsoVVVL_PFHT350_PFMET50",
+    "HLT_Mu15_IsoVVVL_PFHT350",
+    "HLT_Mu15_IsoVVVL_PFHT400_PFMET50",
+    "HLT_Mu15_IsoVVVL_PFHT400",
+    "HLT_Mu15_IsoVVVL_PFHT600",
+    "HLT_Mu16_eta2p1_MET30",
+    "HLT_Mu20",
+    "HLT_Mu24_eta2p1",
+    "HLT_Mu27",
+    "HLT_Mu28NoFiltersNoVtx_CentralCaloJet40",
+    "HLT_Mu28NoFiltersNoVtx_DisplacedJet40_Loose",
+    "HLT_Mu300",
+    "HLT_Mu30_eta2p1_PFJet150_PFJet50",
+    "HLT_Mu33NoFiltersNoVtxDisplaced_DisplacedJet50_Loose",
+    "HLT_Mu33NoFiltersNoVtxDisplaced_DisplacedJet50_Tight",
+    "HLT_Mu350",
+    "HLT_Mu38NoFiltersNoVtxDisplaced_DisplacedJet60_Loose",
+    "HLT_Mu38NoFiltersNoVtxDisplaced_DisplacedJet60_Tight",
+    "HLT_Mu38NoFiltersNoVtx_DisplacedJet60_Loose",
+    "HLT_Mu40_eta2p1_PFJet200_PFJet50",
+    "HLT_Mu45_eta2p1",
+    "HLT_Mu50_IsoVVVL_PFHT400",
+    "HLT_Mu50",
+    "HLT_Mu55",
+    "HLT_Mu8_TrkIsoVVL_DiPFJet40_DEta3p5_MJJ750_HTT300_PFMETNoMu60",
+    "HLT_TkMu17",
+    "HLT_TkMu20",
+    "HLT_TkMu24_eta2p1",
+    "HLT_TkMu27",
+    "HLT_TkMu50",
+
+    ]
 
     nFiles = len(inputFileNames)
     print("Will run over %i files and output to %s " % (nFiles, outputFileName))
@@ -203,6 +270,15 @@ def NanoReader(inputFileNames=["in.root"], outputFileName="out.root", json = '',
             count +=1
             # Grab the event
             event = Event(inTree, entry)
+            
+            passTrigger = False
+            for trig in triggers:
+                if not inTree.GetBranch(trig): continue      # skip triggers not in this file
+                if inTree.readBranch(trig):
+                    passTrigger = True
+                    break                 # one trigger 
+            if(not passTrigger): continue
+
 
             passFilter = True
             for fil in filters: passFilter = passFilter and inTree.readBranch(fil)
