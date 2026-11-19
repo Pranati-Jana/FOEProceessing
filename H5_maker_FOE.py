@@ -81,7 +81,6 @@ class Outputer:
 
         clean_PFCands = []
         for idx in range(len(PFCands)):
-            if abs(PFCands[idx].pdgId) != 13: continue   # keep only muons
             cand = ROOT.Math.PtEtaPhiMVector(PFCands[idx].pt, PFCands[idx].eta, PFCands[idx].phi, PFCands[idx].mass)
             clean_PFCands.append([cand.Px(), cand.Py(), cand.Pz(), cand.E(), 
                 PFCands[idx].d0, PFCands[idx].d0Err, PFCands[idx].dz, PFCands[idx].dzErr, PFCands[idx].charge, PFCands[idx].pdgId, PFCands[idx].puppiWeight])
@@ -89,11 +88,8 @@ class Outputer:
 
         self.event_info[self.idx] = np.array(event_info, dtype=np.int64)
         
-        # if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]
-        # self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
-        if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]   
-        if len(clean_PFCands) > 0:                                                                   
-            self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
+        if(len(clean_PFCands) > self.n_pf_cands): clean_PFCands = clean_PFCands[:self.n_pf_cands]
+        self.PFCands[self.idx,:len(clean_PFCands)] = self.sort_pfcands(np.array(clean_PFCands, dtype = np.float32))
         
         self.idx +=1
         if(self.idx % self.batch_size == 0): self.write_out()
@@ -153,7 +149,8 @@ def NanoReader(inputFileNames=["in.root"], outputFileName="out.root", json = '',
     "HLT_IsoMu16_eta2p1_MET30_LooseIsoPFTau50_Trk30_eta2p1",
     "HLT_IsoMu16_eta2p1_MET30",
     "HLT_IsoMu17_eta2p1_LooseIsoPFTau20_SingleL1",
-    "HLT_IsoMu17_eta2p1_LooseIsoPFTau20",
+    "HLT_IsoMu17_eta2p1_LooseIsoPFTau20"
+    
     "HLT_IsoMu18",
     "HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1",
     "HLT_IsoMu19_eta2p1_LooseIsoPFTau20",
